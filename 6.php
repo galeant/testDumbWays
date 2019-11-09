@@ -23,8 +23,8 @@
         foreach($iar as $ind=>$lar){
             $far[] = $ar[$ind];
         }
-        foreach($far as $flar){
-            sort($flar);
+        foreach($far as $in=>$flar){
+            sort($far[$in]);
         }
         return $far;
     }
