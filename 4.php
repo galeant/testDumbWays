@@ -1,52 +1,32 @@
 <?php
-    $ql = 'b';
-    $qty = 6;
-    var_dump(qlToQt($ql,$qty));
-
-    function qlToQt($ql,$qty){
-        $master = [
-            'a' => [
-                'harga' => 3000,
-                'treshold' => 10,
-                'disc' => 500,
-                'disc_notation' => 'number'
-            ],
-            'b' => [
-                'harga' => 3500,
-                'treshold' => 5,
-                'disc' => 50,
-                'disc_notation' => 'percent'
-            ],
-            'c' => [
-                'harga' => 5000,
-                'treshold' => 0,
-                'disc' => 0,
-                'disc_notation' => null
-            ]
-        ];
-
-        if(isset($master[$ql])){
-            $harga = $master[$ql]['harga'];
-            if($qty >= $master[$ql]['treshold']){
-                $total_harga_barang = $harga*$qty;
-                switch($master[$ql]['disc_notation']){
-                    case 'number':
-                        $potongan = $qty*$master[$ql]['disc'];
-                    break;
-
-                    case 'percent':
-                        $potongan = $total_harga_barang*$master[$ql]['disc']/100;
-                    break;
-                }
-                $total_bayar = $total_harga_barang - $potongan;
-            }
-            return [
-                'total harga barang' => $total_harga_barang,
-                'potongan' => $potongan,
-                'total bayar' => $total_bayar
-            ];
-        }else{
-            return 'tidak ada data barang';
+    $realstring = 'password';
+    $security = new keamanan();
+    
+    $encrypt = $security->encrypt($realstring);
+    $decrypt = $security->decrypt($encrypt);
+    echo 'real string = '.$realstring.'</br>';
+    echo 'encrypt= '.$encrypt.'</br>';
+    echo 'decrypt= '.$decrypt.'</br>';
+    
+    class keamanan{
+        function __construct(){
+            $this->ciphering = "BF-CBC"; 
+            $this->iv_length = openssl_cipher_iv_length($this->ciphering); 
+            $this->options = 0; 
+        }
+        function encrypt($string){
+            $encryption_iv = random_bytes($this->iv_length); 
+            $this->encryption_iv = $encryption_iv;
+            $encryption_key = openssl_digest(php_uname(), 'MD5', TRUE); 
+            $encryption = openssl_encrypt($string, $this->ciphering, $encryption_key, $this->options, $encryption_iv); 
+            return $encryption;
+        }
+    
+        function decrypt($string){
+            $decryption_iv = random_bytes($this->iv_length); 
+            $decryption_key = openssl_digest(php_uname(), 'MD5', TRUE); 
+            $decryption = openssl_decrypt ($string, $this->ciphering, $decryption_key, $this->options, $this->encryption_iv); 
+            return $decryption;
         }
     }
 ?>
